@@ -31,3 +31,16 @@ func TestStep1(t *testing.T) {
 	runParserTest(t, "JustString", `"key"`, false)
 	runParserTest(t, "EmptyInput", ``, false)
 }
+
+func TestStep2(t *testing.T) {
+	runParserTest(t, "SinglePair", `{"key": "value"}`, true)
+	// Invalid cases
+	runParserTest(t, "MissingQuotesOnKey", `{key: "value"}`, false)
+	runParserTest(t, "MissingQuotesOnValue", `{"key": value}`, false)
+	runParserTest(t, "MissingColon", `{"key" "value"}`, false)
+	runParserTest(t, "MissingComma", `{"key1": "value1" "key2": "value2"}`, false)
+	runParserTest(t, "TrailingComma", `{"key": "value",}`, false)
+	runParserTest(t, "EmptyStringKey", `{"": "value"}`, true)
+	runParserTest(t, "EmptyStringValue", `{"key": ""}`, true)
+	runParserTest(t, "ExtraCharacters", `{"key": "value"} extra`, false)
+}
