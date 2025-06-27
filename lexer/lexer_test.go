@@ -79,3 +79,27 @@ func TestNextToken_UnterminatedString(t *testing.T) {
 		t.Errorf("Expected INVALID token, got %q", tok.Type)
 	}
 }
+
+func TestNextToken_BooleanTrueFalse(t *testing.T) {
+	input := `{"a": true, "b": false}`
+	expectedTokens := []Token{
+		{Type: TokenCurlyOpen, Literal: "{"},
+		{Type: TokenString, Literal: "a"},
+		{Type: TokenColon, Literal: ":"},
+		{Type: TokenBool, Literal: "true"},
+		{Type: TokenComma, Literal: ","},
+		{Type: TokenString, Literal: "b"},
+		{Type: TokenColon, Literal: ":"},
+		{Type: TokenBool, Literal: "false"},
+		{Type: TokenCurlyClose, Literal: "}"},
+		{Type: TokenEOF, Literal: ""},
+	}
+
+	lex := NewLexer(input)
+	for i, expected := range expectedTokens {
+		tok := lex.NextToken()
+		if tok.Type != expected.Type || tok.Literal != expected.Literal {
+			t.Errorf("Token %d - got (%q, %q), expected (%q, %q)", i, tok.Type, tok.Literal, expected.Type, expected.Literal)
+		}
+	}
+}

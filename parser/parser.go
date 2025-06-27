@@ -100,7 +100,7 @@ func (p *Parser) parseObject() bool {
 			}
 			state = stateExpectValue
 
-		case lexer.TokenString:
+		case lexer.TokenString, lexer.TokenNumber, lexer.TokenBool, lexer.TokenNull:
 			switch state {
 			case stateExpectKeyOrEnd:
 				if tok.Type != lexer.TokenString {
@@ -122,7 +122,6 @@ func (p *Parser) parseObject() bool {
 				fmt.Printf("DEBUG: Unexpected '{' in state %s\n", state)
 				return false
 			}
-			fmt.Println("DEBUG: Entering nested object")
 			if !p.parseObject() {
 				return false
 			}

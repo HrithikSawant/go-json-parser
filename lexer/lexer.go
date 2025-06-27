@@ -13,6 +13,9 @@ const (
 	TokenString     = "STRING"  // Represents strings
 	TokenEOF        = "EOF"     // End of file/input
 	TokenInvalid    = "INVALID" // Invalid token
+	TokenNumber     = "NUMBER"  // Represents digit 0-9
+	TokenBool       = "BOOL"    // Represents Bool true/false
+	TokenNull       = "NULL"    // Represents Null
 )
 
 type Token struct {
@@ -69,6 +72,46 @@ func (l *Lexer) NextToken() Token {
 		l.pos++
 		return Token{Type: TokenString, Literal: literal}
 	default:
+		if isAlpha(ch) {
+			start := l.pos
+			for l.pos < len(l.input) && isAlpha(l.input[l.pos]) {
+				l.pos++
+			}
+			word := l.input[start:l.pos]
+			switch word {
+			case "true", "false":
+				return Token{Type: TokenBool, Literal: word}
+			case "null":
+				return Token{Type: TokenNull, Literal: word}
+			default:
+				return Token{Type: TokenInvalid, Literal: word}
+			}
+		} else if isDigit(ch) || ch == '-' {
+			start := l.pos
+			if ch == '-' {
+				l.pos++
+			}
+			for l.pos < len(l.input) && isDigit(l.input[l.pos]) {
+				l.pos++
+			}
+			if l.pos < len(l.input) && l.input[l.pos] == '.' {
+				l.pos++
+				for l.pos < len(l.input) && isDigit(l.input[l.pos]) {
+					l.pos++
+				}
+			}
+			return Token{Type: TokenNumber, Literal: l.input[start:l.pos]}
+		}
+		l.pos++
 		return Token{Type: TokenInvalid, Literal: string(ch)}
 	}
+}
+
+// isAlpha returns true if ch is a letter (A-Z or a-z)
+func isAlpha(ch byte) bool {
+	return unicode.IsLetter(rune(ch))
+}
+
+func isDigit(ch byte) bool {
+	return ch >= '0' && ch <= '9'
 }
