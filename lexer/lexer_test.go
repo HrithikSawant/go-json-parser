@@ -103,3 +103,29 @@ func TestNextToken_BooleanTrueFalse(t *testing.T) {
 		}
 	}
 }
+
+func TestNextToken_Array(t *testing.T) {
+	input := `{"arr": [1, 2, 3]}`
+	expectedTokens := []Token{
+		{Type: TokenCurlyOpen, Literal: "{"},
+		{Type: TokenString, Literal: "arr"},
+		{Type: TokenColon, Literal: ":"},
+		{Type: TokenSquareOpen, Literal: "["},
+		{Type: TokenNumber, Literal: "1"},
+		{Type: TokenComma, Literal: ","},
+		{Type: TokenNumber, Literal: "2"},
+		{Type: TokenComma, Literal: ","},
+		{Type: TokenNumber, Literal: "3"},
+		{Type: TokenSquareClose, Literal: "]"},
+		{Type: TokenCurlyClose, Literal: "}"},
+		{Type: TokenEOF, Literal: ""},
+	}
+
+	lex := NewLexer(input)
+	for i, expected := range expectedTokens {
+		tok := lex.NextToken()
+		if tok.Type != expected.Type || tok.Literal != expected.Literal {
+			t.Errorf("Token %d - got (%q, %q), expected (%q, %q)", i, tok.Type, tok.Literal, expected.Type, expected.Literal)
+		}
+	}
+}

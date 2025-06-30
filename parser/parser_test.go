@@ -138,3 +138,23 @@ func TestStep3_WhitespaceBetweenTokens(t *testing.T) {
 func TestStep3_EmptyObjectWithWhitespace(t *testing.T) {
 	runParserTest(t, "EmptyObjectWithWhitespace", ` {    } `, true)
 }
+
+func TestStep4_ArrayOfNumbers(t *testing.T) {
+	runParserTest(t, "ArrayOfNumbers", `{"nums": [1, 2, 3]}`, true)
+}
+
+func TestStep4_ArrayOfStrings(t *testing.T) {
+	runParserTest(t, "ArrayOfStrings", `{"names": ["Alice", "Bob"]}`, true)
+}
+
+func TestStep4_ArrayOfMixedTypes(t *testing.T) {
+	runParserTest(t, "ArrayOfMixedTypes", `{"mixed": [1, "two", true, null]}`, true)
+}
+
+func TestStep4_EmptyArray(t *testing.T) {
+	runParserTest(t, "EmptyArray", `{"empty": []}`, true)
+}
+
+func TestStep4_ArrayTrailingComma(t *testing.T) {
+	runParserTest(t, "ArrayTrailingComma", `{"bad": [1, 2,]}`, false)
+}

@@ -1,0 +1,13 @@
+{
+  "name": "Alice",
+  "age": 30,
+  "isStudent": false,
+  "scores": [98, 87, 92],
+  "profile": {
+    "email": "alice@example.com",
+    "phones": ["123-456", "789-012"]
+  },
+  "emptyArray": [],
+  "emptyObject": {}
+}
+

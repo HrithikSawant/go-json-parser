@@ -5,17 +5,20 @@ import (
 	"unicode"
 )
 
+// Token types
 const (
-	TokenCurlyOpen  = "{"
-	TokenCurlyClose = "}"
-	TokenColon      = ":"       // Represents `:`
-	TokenComma      = ","       // Represents `,`
-	TokenString     = "STRING"  // Represents strings
-	TokenEOF        = "EOF"     // End of file/input
-	TokenInvalid    = "INVALID" // Invalid token
-	TokenNumber     = "NUMBER"  // Represents digit 0-9
-	TokenBool       = "BOOL"    // Represents Bool true/false
-	TokenNull       = "NULL"    // Represents Null
+	TokenCurlyOpen   = "{"       // Represents `{`
+	TokenCurlyClose  = "}"       // Represents `}`
+	TokenSquareOpen  = "["       // Represents `[`
+	TokenSquareClose = "]"       // Represents `]`
+	TokenColon       = ":"       // Represents `:`
+	TokenComma       = ","       // Represents `,`
+	TokenString      = "STRING"  // Represents strings
+	TokenEOF         = "EOF"     // End of file/input
+	TokenInvalid     = "INVALID" // Invalid token
+	TokenNumber      = "NUMBER"  // Represents digit 0-9
+	TokenBool        = "BOOL"    // Represents Bool true/false
+	TokenNull        = "NULL"    // Represents Null
 )
 
 type Token struct {
@@ -23,11 +26,13 @@ type Token struct {
 	Literal string
 }
 
+// Lexer for tokenizing the input
 type Lexer struct {
 	input string
 	pos   int
 }
 
+// NewLexer creates a new Lexer
 func NewLexer(input string) *Lexer {
 	return &Lexer{input: strings.TrimSpace(input)}
 }
@@ -53,6 +58,12 @@ func (l *Lexer) NextToken() Token {
 	case '}':
 		l.pos++
 		return Token{Type: TokenCurlyClose, Literal: "}"}
+	case '[':
+		l.pos++
+		return Token{Type: TokenSquareOpen, Literal: "["}
+	case ']':
+		l.pos++
+		return Token{Type: TokenSquareClose, Literal: "]"}
 	case ':':
 		l.pos++
 		return Token{Type: TokenColon, Literal: ":"}
