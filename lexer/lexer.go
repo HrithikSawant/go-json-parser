@@ -16,7 +16,7 @@ const (
 	TokenString      = "STRING"  // Represents strings
 	TokenEOF         = "EOF"     // End of file/input
 	TokenInvalid     = "INVALID" // Invalid token
-	TokenNumber      = "NUMBER"  // Represents digit 0-9
+	TokenNumber      = "NUMBER"  // Represents digit 0-9 including floats and exponents
 	TokenBool        = "BOOL"    // Represents Bool true/false
 	TokenNull        = "NULL"    // Represents Null
 )
@@ -38,13 +38,11 @@ func NewLexer(input string) *Lexer {
 }
 
 func (l *Lexer) NextToken() Token {
-
 	// Skip whitespace
 	for l.pos < len(l.input) && unicode.IsSpace(rune(l.input[l.pos])) {
 		l.pos++
 	}
 
-	// Check if its a ending token
 	if l.pos >= len(l.input) {
 		return Token{Type: TokenEOF}
 	}
@@ -73,15 +71,31 @@ func (l *Lexer) NextToken() Token {
 	case '"':
 		l.pos++
 		start := l.pos
-		for l.pos < len(l.input) && l.input[l.pos] != '"' {
+		escaped := false
+		for l.pos < len(l.input) {
+			ch := l.input[l.pos]
+			if escaped {
+				escaped = false
+				l.pos++
+				continue
+			}
+			if ch == '\\' {
+				escaped = true
+				l.pos++
+				continue
+			}
+			if ch == '"' {
+				break
+			}
 			l.pos++
 		}
 		if l.pos >= len(l.input) {
 			return Token{Type: TokenInvalid, Literal: "Unterminated string"}
 		}
 		literal := l.input[start:l.pos]
-		l.pos++
+		l.pos++ // skip closing quote
 		return Token{Type: TokenString, Literal: literal}
+
 	default:
 		if isAlpha(ch) {
 			start := l.pos
@@ -99,20 +113,46 @@ func (l *Lexer) NextToken() Token {
 			}
 		} else if isDigit(ch) || ch == '-' {
 			start := l.pos
-			if ch == '-' {
+
+			// minus
+			if l.input[l.pos] == '-' {
 				l.pos++
 			}
+
+			// Integer part
 			for l.pos < len(l.input) && isDigit(l.input[l.pos]) {
 				l.pos++
 			}
+
+			// Fractional part
 			if l.pos < len(l.input) && l.input[l.pos] == '.' {
 				l.pos++
 				for l.pos < len(l.input) && isDigit(l.input[l.pos]) {
 					l.pos++
 				}
 			}
+
+			// Exponent part
+			if l.pos < len(l.input) && (l.input[l.pos] == 'e' || l.input[l.pos] == 'E') {
+				l.pos++ // skip 'e' or 'E'
+
+				if l.pos < len(l.input) && (l.input[l.pos] == '+' || l.input[l.pos] == '-') {
+					l.pos++ // optional '+' or '-'
+				}
+
+				// Require at least one digit after e/E
+				if l.pos >= len(l.input) || !isDigit(l.input[l.pos]) {
+					return Token{Type: TokenInvalid, Literal: l.input[start:l.pos]}
+				}
+				for l.pos < len(l.input) && isDigit(l.input[l.pos]) {
+					l.pos++
+				}
+			}
+
 			return Token{Type: TokenNumber, Literal: l.input[start:l.pos]}
 		}
+
+		// Unknown/invalid character
 		l.pos++
 		return Token{Type: TokenInvalid, Literal: string(ch)}
 	}

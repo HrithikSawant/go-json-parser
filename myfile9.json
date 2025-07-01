@@ -1,0 +1,6 @@
+{
+  "escaped_backslash": "This is a backslash: \\",
+  "escaped_quote": "He said, \"Hello!\"",
+  "escaped_newline": "Line1\\nLine2"
+}
+

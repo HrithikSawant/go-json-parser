@@ -1,0 +1,11 @@
+{
+  "quote": "He said, \"JSON is awesome!\"",
+  "backslash": "A backslash looks like this: \\",
+  "slash": "This is a forward slash: / or escaped: \\/",
+  "backspace": "Back\bspace",
+  "formfeed": "Form\fFeed",
+  "newline": "Line1\nLine2",
+  "carriage_return": "Carriage\rReturn",
+  "tab": "Tab\tSeparated"
+}
+
